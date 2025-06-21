@@ -4,10 +4,10 @@ namespace SportsNotes.Interfaces
 {
     public interface IExerciseService
     {
-        IEnumerable<ExerciseDTO> GetAllExercises();
-        ExerciseDTO GetExerciseById(int id);
-        ExerciseDTO AddExercise(ExerciseDTO exercise);
-        ExerciseDTO EditExercise(int id, ExerciseDTO exercise);
+        IEnumerable<ProgressRecordDTO> GetAllExercises();
+        ProgressRecordDTO GetExerciseById(int id);
+        ProgressRecordDTO AddExercise(ProgressRecordDTO exercise);
+        ProgressRecordDTO EditExercise(int id, ProgressRecordDTO exercise);
         void DeleteExercise(int id);
     }
 }

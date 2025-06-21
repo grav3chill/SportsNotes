@@ -17,8 +17,8 @@ namespace SportsNotes
             builder.Services.AddControllers();
             builder.Services.AddAutoMapper(cfg =>
             {
-                cfg.CreateMap<Workout, WorkoutDTO>();
-                cfg.CreateMap<Exercise, ExerciseDTO>();
+                cfg.CreateMap<Workout, ProgressRecordDTO>();
+                cfg.CreateMap<Exercise, ProgressRecordDTO>();
                 cfg.CreateMap<ProgressRecord, ProgressRecordDTO>();
             });
             
@@ -26,8 +26,8 @@ namespace SportsNotes
             builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { 
                 Title = "SportsNotes API",
                 Version ="v1",
-                Description = "API для управления тренировками"
-
+                Description = "API для управления тренировками",
+                
             }));
 
             var app = builder.Build();
@@ -36,7 +36,10 @@ namespace SportsNotes
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SportsNotes API v1");
+                });
             }
 
             app.UseHttpsRedirection();

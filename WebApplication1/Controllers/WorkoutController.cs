@@ -1,6 +1,6 @@
-﻿namespace SportsNotes.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace SportsNotes.Controllers
 {
-    public class WorkoutController
-    {
-    }
+    
 }
