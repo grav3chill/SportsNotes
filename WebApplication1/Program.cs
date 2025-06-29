@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore.Sqlite;
+using SportsNotes.Utilities;
 using SportsNotes.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -17,19 +18,7 @@ namespace SportsNotes
             // Add services to the container.
             builder.Services.AddDbContext<SportsNotesDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.CreateMap<Workout, WorkoutDTO>();
-                cfg.CreateMap<WorkoutDTO, Workout>();
-
-                cfg.CreateMap<Exercise, ExerciseDTO>();
-                cfg.CreateMap<ExerciseDTO, Exercise>();
-
-                cfg.CreateMap<ProgressRecord, ProgressRecordDTO>();
-                cfg.CreateMap<ProgressRecordDTO, ProgressRecord>();
-            });
-
-
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { 
                 Title = "SportsNotes API",

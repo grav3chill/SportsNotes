@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// SportsNotes/Controllers/WorkoutsController.cs
+using Microsoft.AspNetCore.Mvc;
 using SportsNotes.DTOs;
 using SportsNotes.Interfaces;
 
@@ -19,12 +20,10 @@ namespace SportsNotes.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Получить все тренировки
-        /// </summary>
+        
+        // Получить все тренировки
+        
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<WorkoutDTO>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAll()
         {
             try
@@ -39,20 +38,15 @@ namespace SportsNotes.Controllers
             }
         }
 
-        /// <summary>
-        /// Получить тренировку по ID
-        /// </summary>
-        /// <param name="id">ID тренировки</param>
+        
+        // Получить тренировку по ID
+        
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WorkoutDTO))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetById(int id)
         {
             try
             {
                 var workout = _workoutService.GetWorkoutById(id);
-
                 if (workout == null)
                     return NotFound($"Тренировка с ID {id} не найдена");
 
@@ -65,14 +59,10 @@ namespace SportsNotes.Controllers
             }
         }
 
-        /// <summary>
-        /// Создать новую тренировку
-        /// </summary>
-        /// <param name="workoutDTO">Данные тренировки</param>
+        
+        // Создать новую тренировку
+        
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(WorkoutDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Create([FromBody] WorkoutDTO workoutDTO)
         {
             try
@@ -81,7 +71,7 @@ namespace SportsNotes.Controllers
                     return BadRequest(ModelState);
 
                 var createdWorkout = _workoutService.AddWorkout(workoutDTO);
-                return CreatedAtAction(nameof(GetById), new { id = createdWorkout.Id }, createdWorkout);
+                return StatusCode(201, createdWorkout);
             }
             catch (Exception ex)
             {
@@ -90,16 +80,10 @@ namespace SportsNotes.Controllers
             }
         }
 
-        /// <summary>
-        /// Обновить тренировку
-        /// </summary>
-        /// <param name="id">ID тренировки</param>
-        /// <param name="workoutDTO">Обновленные данные</param>
+        
+        // Обновить тренировку
+        
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Update(int id, [FromBody] WorkoutDTO workoutDTO)
         {
             try
@@ -122,14 +106,10 @@ namespace SportsNotes.Controllers
             }
         }
 
-        /// <summary>
-        /// Удалить тренировку
-        /// </summary>
-        /// <param name="id">ID тренировки</param>
+        
+        // Удалить тренировку
+        
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(int id)
         {
             try

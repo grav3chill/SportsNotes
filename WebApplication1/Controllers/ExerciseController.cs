@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using SportsNotes.DTOs;
 using SportsNotes.Interfaces;
 
@@ -11,15 +12,15 @@ namespace SportsNotes.Controllers
         private readonly IExerciseService _exerciseService;
         private readonly ILogger<ExerciseController> _logger;
 
-        public ExerciseController(IExerciseService exerciseService, ILogger<ExerciseController> logger)
+        public ExerciseController(
+            IExerciseService exerciseService,
+            ILogger<ExerciseController> logger)
         {
             _exerciseService = exerciseService;
             _logger = logger;
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ExerciseDTO>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAll()
         {
             try
@@ -29,15 +30,12 @@ namespace SportsNotes.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при получении списка упражнений");
+                _logger.LogError(ex, "Ошибка при получении упражнений");
                 return StatusCode(500, "Внутренняя ошибка сервера");
             }
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExerciseDTO))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetById(int id)
         {
             try
@@ -56,9 +54,6 @@ namespace SportsNotes.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ExerciseDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Create([FromBody] ExerciseDTO exerciseDTO)
         {
             try
@@ -66,8 +61,8 @@ namespace SportsNotes.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var createdExercise = _exerciseService.AddExercise(exerciseDTO);
-                return CreatedAtAction(nameof(GetById), new { id = createdExercise.Id }, createdExercise);
+                var created = _exerciseService.AddExercise(exerciseDTO);
+                return StatusCode(201, created);
             }
             catch (Exception ex)
             {
@@ -77,10 +72,6 @@ namespace SportsNotes.Controllers
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Update(int id, [FromBody] ExerciseDTO exerciseDTO)
         {
             try
@@ -104,9 +95,6 @@ namespace SportsNotes.Controllers
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(int id)
         {
             try

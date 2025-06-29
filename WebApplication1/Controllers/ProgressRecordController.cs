@@ -67,7 +67,7 @@ namespace SportsNotes.Controllers
                     return BadRequest(ModelState);
 
                 var createdRecord = _progressRecordService.AddProgressRecord(progressRecordDTO);
-                return CreatedAtAction(nameof(GetById), new { id = createdRecord.Id }, createdRecord);
+                return StatusCode(201, createdRecord);
             }
             catch (Exception ex)
             {

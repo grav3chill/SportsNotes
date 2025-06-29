@@ -8,7 +8,6 @@
         public int Sets { get; set; }
         public int Reps { get; set; }
         public float Weight { get; set; }
-        public int DurationInMinutes { get; set; }
         public int BurnedCcal { get; set; }
     }
 }
