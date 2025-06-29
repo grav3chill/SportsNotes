@@ -21,20 +21,20 @@ namespace SportsNotes.Services
                 throw new ArgumentNullException(nameof(mapper));
             _mapper = mapper;
         }
-        public IEnumerable<ProgressRecordDTO> GetAllExercises()
+        public IEnumerable<ExerciseDTO> GetAllExercises()
         {
-            var exercises = _dbContext.Workouts.AsNoTracking().ToList();
-            var exerciseDTOs = _mapper.Map<List<ProgressRecordDTO>>(exercises);
+            var exercises = _dbContext.Exercises.AsNoTracking().ToList();
+            var exerciseDTOs = _mapper.Map<List<ExerciseDTO>>(exercises);
             return exerciseDTOs;
         }
 
-        public ProgressRecordDTO GetExerciseById(int id)
+        public ExerciseDTO GetExerciseById(int id)
         {
-            var exerciseDTO = _mapper.Map<ProgressRecordDTO>(_dbContext.Exercises.AsNoTracking().FirstOrDefault(w => w.Id == id));
+            var exerciseDTO = _mapper.Map<ExerciseDTO>(_dbContext.Exercises.AsNoTracking().FirstOrDefault(w => w.Id == id));
             return exerciseDTO;
         }
 
-        public ProgressRecordDTO AddExercise(ProgressRecordDTO exerciseDTO)
+        public ExerciseDTO AddExercise(ExerciseDTO exerciseDTO)
         {
             if (exerciseDTO == null)
                 throw new ArgumentNullException(nameof(exerciseDTO));
@@ -43,10 +43,10 @@ namespace SportsNotes.Services
             _dbContext.Exercises.Add(exercise);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(exercise);
+            return _mapper.Map<ExerciseDTO>(exercise);
         }
 
-        public ProgressRecordDTO EditExercise(int id, ProgressRecordDTO exerciseDTO)
+        public ExerciseDTO EditExercise(int id, ExerciseDTO exerciseDTO)
         {
             if (exerciseDTO == null)
                 throw new ArgumentNullException(nameof(exerciseDTO));
@@ -58,7 +58,7 @@ namespace SportsNotes.Services
             _mapper.Map(exerciseDTO, exerciseToEditDTO);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(exerciseToEditDTO);
+            return _mapper.Map<ExerciseDTO>(exerciseToEditDTO);
         }
 
         public void DeleteExercise(int id)

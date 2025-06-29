@@ -23,20 +23,20 @@ namespace SportsNotes.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<ProgressRecordDTO> GetAllWorkouts()
+        public IEnumerable<WorkoutDTO> GetAllWorkouts()
         {
             var workouts = _dbContext.Workouts.AsNoTracking().ToList();
-            var workoutDTOs = _mapper.Map<List<ProgressRecordDTO>>(workouts);
+            var workoutDTOs = _mapper.Map<List<WorkoutDTO>>(workouts);
             return workoutDTOs;
         }
 
-        public ProgressRecordDTO GetWorkoutById(int id)
+        public WorkoutDTO GetWorkoutById(int id)
         {
-            var workoutDTO = _mapper.Map<ProgressRecordDTO>(_dbContext.Workouts.AsNoTracking().FirstOrDefault(w => w.Id == id));
+            var workoutDTO = _mapper.Map<WorkoutDTO>(_dbContext.Workouts.AsNoTracking().FirstOrDefault(w => w.Id == id));
             return workoutDTO;
         }
 
-        public ProgressRecordDTO AddWorkout(ProgressRecordDTO workoutDTO)
+        public WorkoutDTO AddWorkout(WorkoutDTO workoutDTO)
         {
             if (workoutDTO == null)
                 throw new ArgumentNullException(nameof(workoutDTO));
@@ -45,10 +45,10 @@ namespace SportsNotes.Services
             _dbContext.Workouts.Add(workout);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(workout);
+            return _mapper.Map<WorkoutDTO>(workout);
         }
 
-        public ProgressRecordDTO EditWorkout(int id, ProgressRecordDTO workoutDTO) 
+        public WorkoutDTO EditWorkout(int id, WorkoutDTO workoutDTO) 
         {
             if (workoutDTO == null)
                 throw new ArgumentNullException(nameof(workoutDTO));
@@ -60,7 +60,7 @@ namespace SportsNotes.Services
             _mapper.Map(workoutDTO, workoutToEditDTO);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(workoutToEditDTO);
+            return _mapper.Map<WorkoutDTO>(workoutToEditDTO);
         }
 
         public void DeleteWorkout(int id)

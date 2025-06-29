@@ -36,12 +36,12 @@ namespace SportsNotes.Services
             return ProgressRecordDTO;
         }
 
-        public ProgressRecordDTO AddProgressRecord(ProgressRecordDTO ProgressRecordDTO)
+        public ProgressRecordDTO AddProgressRecord(ProgressRecordDTO progressRecordDTO)
         {
-            if (ProgressRecordDTO == null)
-                throw new ArgumentNullException(nameof(ProgressRecordDTO));
+            if (progressRecordDTO == null)
+                throw new ArgumentNullException(nameof(progressRecordDTO));
 
-            var progressRecord = _mapper.Map<ProgressRecord>(ProgressRecordDTO);
+            var progressRecord = _mapper.Map<ProgressRecord>(progressRecordDTO);
             _dbContext.ProgressRecords.Add(progressRecord);
             _dbContext.SaveChanges();
 
