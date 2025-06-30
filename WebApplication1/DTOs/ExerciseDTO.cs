@@ -7,11 +7,9 @@ namespace SportsNotes.DTOs
         public int Id { get; set; }
         
         [Required]
-        [StringLength(100, ErrorMessage = "Название не должно превышать 100 символов")]
         public string? MuscleGroup { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "Название не должно превышать 100 символов")]
         public string? Name { get; set; }
         
         [Required]

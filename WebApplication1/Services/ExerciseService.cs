@@ -4,6 +4,7 @@ using SportsNotes.Database;
 using SportsNotes.DTOs;
 using SportsNotes.Entities;
 using SportsNotes.Interfaces;
+
 namespace SportsNotes.Services
 {
     public class ExerciseService : IExerciseService
@@ -13,31 +14,28 @@ namespace SportsNotes.Services
 
         public ExerciseService(SportsNotesDbContext dbContext, IMapper mapper)
         {
-            if (dbContext == null)
-                throw new ArgumentNullException(nameof(dbContext));
-            _dbContext = dbContext;
-
-            if (mapper == null)
-                throw new ArgumentNullException(nameof(mapper));
-            _mapper = mapper;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
+
         public IEnumerable<ExerciseDTO> GetAllExercises()
         {
             var exercises = _dbContext.Exercises.AsNoTracking().ToList();
-            var exerciseDTOs = _mapper.Map<List<ExerciseDTO>>(exercises);
-            return exerciseDTOs;
+            return _mapper.Map<List<ExerciseDTO>>(exercises);
         }
 
         public ExerciseDTO GetExerciseById(int id)
         {
-            var exerciseDTO = _mapper.Map<ExerciseDTO>(_dbContext.Exercises.AsNoTracking().FirstOrDefault(w => w.Id == id));
-            return exerciseDTO;
+            var exercise = _dbContext.Exercises.AsNoTracking().FirstOrDefault(e => e.Id == id);
+            return _mapper.Map<ExerciseDTO>(exercise);
         }
 
         public ExerciseDTO AddExercise(ExerciseDTO exerciseDTO)
         {
             if (exerciseDTO == null)
                 throw new ArgumentNullException(nameof(exerciseDTO));
+
+            ValidateExercise(exerciseDTO);
 
             var exercise = _mapper.Map<Exercise>(exerciseDTO);
             _dbContext.Exercises.Add(exercise);
@@ -51,24 +49,45 @@ namespace SportsNotes.Services
             if (exerciseDTO == null)
                 throw new ArgumentNullException(nameof(exerciseDTO));
 
-            var exerciseToEditDTO = _dbContext.Exercises.FirstOrDefault(w => w.Id == id);
-            if (exerciseToEditDTO == null)
-                throw new KeyNotFoundException($"Упажнение с ID {id} не найдено");
+            ValidateExercise(exerciseDTO);
 
-            _mapper.Map(exerciseDTO, exerciseToEditDTO);
+            var exerciseToEdit = _dbContext.Exercises.FirstOrDefault(e => e.Id == id);
+            if (exerciseToEdit == null)
+                throw new KeyNotFoundException($"Упражнение с ID {id} не найдено");
+
+            _mapper.Map(exerciseDTO, exerciseToEdit);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ExerciseDTO>(exerciseToEditDTO);
+            return _mapper.Map<ExerciseDTO>(exerciseToEdit);
         }
 
         public void DeleteExercise(int id)
         {
             var exercise = _dbContext.Exercises.Find(id);
             if (exercise == null)
-                throw new KeyNotFoundException($"Упажнение с ID {id} не найдено");
+                throw new KeyNotFoundException($"Упражнение с ID {id} не найдено");
 
             _dbContext.Exercises.Remove(exercise);
             _dbContext.SaveChanges();
+        }
+
+       
+        private void ValidateExercise(ExerciseDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new ArgumentException("Название упражнения обязательно");
+
+            if (dto.Name.Length > 100)
+                throw new ArgumentException("Название упражнения слишком длинное");
+
+            if (dto.Reps < 0 || dto.Reps > 1000)
+                throw new ArgumentException("Неверное количество повторений");
+
+            if (dto.Weight < 0 || dto.Weight > 1000)
+                throw new ArgumentException("Неверный вес");
+
+            if (dto.Sets < 1 || dto.Sets > 50)
+                throw new ArgumentException("Неверное количество подходов");
 
         }
     }

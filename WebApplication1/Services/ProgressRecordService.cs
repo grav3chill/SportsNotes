@@ -4,6 +4,7 @@ using SportsNotes.Database;
 using SportsNotes.DTOs;
 using SportsNotes.Entities;
 using SportsNotes.Interfaces;
+
 namespace SportsNotes.Services
 {
     public class ProgressRecordService : IProgressRecordService
@@ -11,67 +12,75 @@ namespace SportsNotes.Services
         private readonly SportsNotesDbContext _dbContext;
         private readonly IMapper _mapper;
 
-
         public ProgressRecordService(SportsNotesDbContext dbContext, IMapper mapper)
         {
-            if (dbContext == null)
-                throw new ArgumentNullException(nameof(dbContext));
-            _dbContext = dbContext;
-
-            if (mapper == null)
-                throw new ArgumentNullException(nameof(mapper));
-            _mapper = mapper;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public IEnumerable<ProgressRecordDTO> GetAllProgressRecords()
         {
-            var progressRecords = _dbContext.ProgressRecords.AsNoTracking().ToList();
-            var ProgressRecordsDTOs = _mapper.Map<List<ProgressRecordDTO>>(progressRecords);
-            return ProgressRecordsDTOs;
+            var records = _dbContext.ProgressRecords.AsNoTracking().ToList();
+            return _mapper.Map<List<ProgressRecordDTO>>(records);
         }
 
         public ProgressRecordDTO GetProgressRecordById(int id)
         {
-            var ProgressRecordDTO = _mapper.Map<ProgressRecordDTO>(_dbContext.ProgressRecords.AsNoTracking().FirstOrDefault(w => w.Id == id));
-            return ProgressRecordDTO;
+            var record = _dbContext.ProgressRecords.AsNoTracking().FirstOrDefault(w => w.Id == id);
+            return _mapper.Map<ProgressRecordDTO>(record);
         }
 
-        public ProgressRecordDTO AddProgressRecord(ProgressRecordDTO progressRecordDTO)
+        public ProgressRecordDTO AddProgressRecord(ProgressRecordDTO dto)
         {
-            if (progressRecordDTO == null)
-                throw new ArgumentNullException(nameof(progressRecordDTO));
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
 
-            var progressRecord = _mapper.Map<ProgressRecord>(progressRecordDTO);
-            _dbContext.ProgressRecords.Add(progressRecord);
+            ValidateProgressRecord(dto);
+
+            var entity = _mapper.Map<ProgressRecord>(dto);
+            _dbContext.ProgressRecords.Add(entity);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(progressRecord);
+            return _mapper.Map<ProgressRecordDTO>(entity);
         }
 
-        public ProgressRecordDTO EditProgressRecord(int id, ProgressRecordDTO ProgressRecordDTO)
+        public ProgressRecordDTO EditProgressRecord(int id, ProgressRecordDTO dto)
         {
-            if (ProgressRecordDTO == null)
-                throw new ArgumentNullException(nameof(ProgressRecordDTO));
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
 
-            var progressRecordToEditDTO = _dbContext.ProgressRecords.FirstOrDefault(w => w.Id == id);
-            if (progressRecordToEditDTO == null)
+            ValidateProgressRecord(dto);
+
+            var entity = _dbContext.ProgressRecords.FirstOrDefault(w => w.Id == id);
+            if (entity == null)
                 throw new KeyNotFoundException($"Прогресс с ID {id} не найден");
 
-            _mapper.Map(ProgressRecordDTO, progressRecordToEditDTO);
+            _mapper.Map(dto, entity);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<ProgressRecordDTO>(progressRecordToEditDTO);
+            return _mapper.Map<ProgressRecordDTO>(entity);
         }
 
         public void DeleteProgressRecord(int id)
         {
-            var ProgressRecord = _dbContext.ProgressRecords.Find(id);
-            if (ProgressRecord == null)
+            var entity = _dbContext.ProgressRecords.Find(id);
+            if (entity == null)
                 throw new KeyNotFoundException($"Прогресс с ID {id} не найден");
 
-            _dbContext.ProgressRecords.Remove(ProgressRecord);
+            _dbContext.ProgressRecords.Remove(entity);
             _dbContext.SaveChanges();
+        }
 
+        private void ValidateProgressRecord(ProgressRecordDTO dto)
+        {
+            if (dto.WeightProgress < 0 || dto.WeightProgress > 300)
+                throw new ArgumentOutOfRangeException(nameof(dto.WeightProgress), "Вес должен быть от 0 до 300");
+
+            if (string.IsNullOrWhiteSpace(dto.Overall))
+                throw new ArgumentException("Поле 'Overall' обязательно");
+
+            if (dto.Overall.Length > 100)
+                throw new ArgumentException("Поле 'Overall' не должно превышать 100 символов");
         }
     }
 }
