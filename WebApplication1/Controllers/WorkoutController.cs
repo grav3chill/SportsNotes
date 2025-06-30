@@ -1,4 +1,3 @@
-﻿// SportsNotes/Controllers/WorkoutsController.cs
 using Microsoft.AspNetCore.Mvc;
 using SportsNotes.DTOs;
 using SportsNotes.Interfaces;
